@@ -1,31 +1,27 @@
-import React, { useCallback } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import {
-    StyleSheet,
-    View,
-    TouchableWithoutFeedback,
-    Keyboard,
-} from 'react-native';
+import * as Location from 'expo-location';
 import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
-import { store } from './redux/store';
-import { RouterStack } from './Screens/RouterStack';
+import { store } from './src/redux/store';
+import RoutesStack from './src/RoutesStack';
+import { useEffect } from 'react';
 
-SplashScreen.preventAutoHideAsync();
-
-function App() {
+export default function App() {
     const [fontsLoaded] = useFonts({
-        'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
-        'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
+        'Roboto-Bold': require('./src/img/fonts/Roboto/Roboto-Bold.ttf'),
+        'Roboto-Medium': require('./src/img/fonts/Roboto/Roboto-Medium.ttf'),
+        'Roboto-Regular': require('./src/img/fonts/Roboto/Roboto-Regular.ttf'),
     });
 
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded) {
-            await SplashScreen.hideAsync();
-        }
-    }, [fontsLoaded]);
+    useEffect(() => {
+        (async () => {
+            const { status } =
+                await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
+        })();
+    }, []);
 
     if (!fontsLoaded) {
         return null;
@@ -33,27 +29,7 @@ function App() {
 
     return (
         <Provider store={store}>
-            <TouchableWithoutFeedback
-                onPress={() => Keyboard.dismiss()}
-                onLayout={onLayoutRootView}
-            >
-                <View style={styles.container}>
-                    <NavigationContainer>
-                        <RouterStack />
-                    </NavigationContainer>
-                    <StatusBar style="auto" />
-                </View>
-            </TouchableWithoutFeedback>
+            <RoutesStack />
         </Provider>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        fontFamily: 'Roboto-Regular',
-    },
-});
-
-export default App;
