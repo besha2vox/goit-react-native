@@ -1,10 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initialPostsState } from './initialPostsState ';
 import { fetchAllPosts, addPost, addComment, addLike } from './postsOperations';
 
 const postsSlice = createSlice({
     name: 'posts',
-    initialState: initialPostsState,
+    initialState: {
+        posts: [],
+        currentPostId: null,
+    },
+    reducers: {
+        setCurrentPostId(state, { payload }) {
+            state.currentPostId = payload;
+        },
+    },
     extraReducers: (buildre) =>
         buildre
             .addCase(fetchAllPosts.fulfilled, (state, { payload }) => {
@@ -15,7 +22,7 @@ const postsSlice = createSlice({
             })
             .addCase(addComment.fulfilled, (state, { payload }) => {
                 const postIndex = state.posts.findIndex(
-                    (post) => post.id === payload.postId
+                    (post) => post.id === payload.currentPostId
                 );
                 state.posts[postIndex].comments.push(payload.comment);
             })
@@ -26,5 +33,7 @@ const postsSlice = createSlice({
                 state.posts[postIndex].likesCount += 1;
             }),
 });
+
+export const { setCurrentPostId } = postsSlice.actions;
 
 export const postsReducer = postsSlice.reducer;

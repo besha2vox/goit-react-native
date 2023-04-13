@@ -6,7 +6,10 @@ import uuid from 'react-native-uuid';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectUID } from '../../../redux/auth/authSelectors';
-import { selectPosts } from '../../../redux/posts/postsSelectors';
+import {
+    selectPosts,
+    selectCurrentPostId,
+} from '../../../redux/posts/postsSelectors';
 import { addComment } from '../../../redux/posts/postsOperations';
 import {
     View,
@@ -27,11 +30,11 @@ import {
 
 const CommentsScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
-    const postId = route.params;
     const { name } = useSelector(selectUser);
     const uid = useSelector(selectUID);
     const { posts } = useSelector(selectPosts);
-    const currentPost = posts.find((post) => post.id === postId);
+    const currentPostId = useSelector(selectCurrentPostId);
+    const currentPost = posts.find((post) => post.id === currentPostId);
     const [message, setMessage] = useState('');
 
     const pushBtnPressHandler = () => {
@@ -48,7 +51,7 @@ const CommentsScreen = ({ route, navigation }) => {
         };
 
         Keyboard.dismiss();
-        dispatch(addComment({ uid, postId, comment: newComment }));
+        dispatch(addComment({ uid, currentPostId, comment: newComment }));
         setMessage('');
     };
 

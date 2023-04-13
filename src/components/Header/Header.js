@@ -1,12 +1,15 @@
 import BackArrowIcon from '../../img/svg/BackArrowIcon';
 import LogOutIcon from '../../img/svg/LogOutIcon';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { logOut } from '../../redux/auth/authOperations';
 
 import { container, screenTitle, icon } from './HeaderStyles';
 
 const MainHeader = ({ title, route, navigation }) => {
+    const dispatch = useDispatch();
     const logoutBtnPressHandler = () => {
-        navigation.navigate('SignUp');
+        dispatch(logOut());
     };
 
     return (

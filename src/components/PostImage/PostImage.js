@@ -1,8 +1,8 @@
-import { Image } from "react-native";
-import { image } from "./PostImageStyles";
+import { Image } from 'react-native';
+import { image } from './PostImageStyles';
 
-const PostImage = ({ source }) => {
-  return <Image source={{ uri: source.uri }} style={image} />;
+const PostImage = ({ photo }) => {
+    return <Image source={{ uri: photo }} style={image} />;
 };
 
 export default PostImage;

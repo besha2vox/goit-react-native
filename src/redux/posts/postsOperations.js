@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { storage } from '../../firebase/firebaseConfig';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebaseConfig';
@@ -65,13 +65,13 @@ const addPost = createAsyncThunk(
 
 const addComment = createAsyncThunk(
     'posts/addComment',
-    async ({ postId, comment }, { rejectWithValue }) => {
+    async ({ currentPostId, comment }, { rejectWithValue }) => {
         try {
-            await updateDoc(doc(db, 'posts', postId), {
+            await updateDoc(doc(db, 'posts', currentPostId), {
                 comments: arrayUnion({ ...comment }),
             });
 
-            return { postId, comment };
+            return { currentPostId, comment };
         } catch (error) {
             console.log(error.message);
             return rejectWithValue(error.message);
@@ -94,5 +94,9 @@ const addLike = createAsyncThunk(
         }
     }
 );
+
+const setCurrentPostId = createAction('posts/setCurrentPostId', (id) => ({
+    payload: { id },
+}));
 
 export { fetchAllPosts, addPost, addComment, addLike };

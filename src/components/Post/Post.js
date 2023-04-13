@@ -1,11 +1,11 @@
-import * as Location from 'expo-location';
 import MessageIcon from '../../img/svg/MessageIcon';
 import ThumbsUpIcon from '../../img/svg/ThumbsUpIcon';
 import MapIcon from '../../img/svg/MapIcon';
 import PostImage from '../PostImage/PostImage';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { setCurrentPostId, addLike } from '../../redux/posts/postsSlice';
+import { addLike } from '../../redux/posts/postsOperations';
+import { setCurrentPostId } from '../../redux/posts/postsSlice';
 
 import {
     title,
@@ -16,33 +16,27 @@ import {
     locationText,
 } from './PostStyles';
 
-const Post = ({
-    post: { id, image, name, likesCount },
-    commentsCount,
-    navigation,
-    route,
-}) => {
+const Post = ({ post, commentsCount, navigation, route }) => {
+    const { id, image, name, likesCount, location } = post;
     const dispatch = useDispatch();
-    console.log('image', image);
-    const messagePressHandler = (id) => {
+
+    const messagePressHandler = () => {
         dispatch(setCurrentPostId(id));
         navigation.navigate('CommentsScreen');
     };
 
     const mapPressHandler = () => {
-        navigation.navigate('MapScreen', image.coordinates);
+        navigation.navigate('MapScreen', location.coordinates);
     };
 
     return (
         <View>
-            <PostImage source={image} />
+            <PostImage photo={image} />
             <Text style={title}>{name}</Text>
             <View style={infoContainer}>
                 <View style={positioning}>
                     <View style={infoWrapper}>
-                        <TouchableOpacity
-                            onPress={() => messagePressHandler(id)}
-                        >
+                        <TouchableOpacity onPress={messagePressHandler}>
                             <MessageIcon commentsCount={commentsCount} />
                         </TouchableOpacity>
                         <Text
@@ -78,8 +72,8 @@ const Post = ({
                     </TouchableOpacity>
                     <Text style={locationText}>
                         {route.name === 'ProfileScreen'
-                            ? `${image.country}`
-                            : `${image.region}, ${image.country}`}
+                            ? `${location.country}`
+                            : `${location.region}, ${location.country}`}
                     </Text>
                 </View>
             </View>

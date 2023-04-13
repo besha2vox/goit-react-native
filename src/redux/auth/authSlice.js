@@ -21,6 +21,7 @@ const authSlice = createSlice({
                 state.stateChange = true;
             })
             .addCase(logOut.fulfilled, (state) => {
+                console.log('logOut');
                 state.user = { name: '', email: '' };
                 state.uid = '';
                 state.stateChange = false;
