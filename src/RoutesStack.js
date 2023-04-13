@@ -1,32 +1,37 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import RegistrationScreen from "./screens/auth/RegistrationScreen/RegistrationScreen";
-import LoginScreen from "./screens/auth/LoginScreen/LoginScreen";
-import HomeScreen from "./screens/main/HomeScreen/HomeScreen";
-import CreatePostsScreen from "./screens/main/CreatePostsScreen/CreatePostsScreen";
-import ProfileScreen from "./screens/main/ProfileScreen/ProfileScreen";
-import CommentsScreen from "./screens/main/CommentsScreen/CommentsScreen";
-import MapScreen from "./screens/main/MapScreen/MapScreen";
-
-const MainStack = createStackNavigator();
+import { NavigationContainer } from '@react-navigation/native';
+import useRoute from './useRoute';
+import { useEffect } from 'react';
+import { auth } from './firebase/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectStateChanged } from './redux/auth/authSelectors';
+import { logIn, checkUser } from './redux/auth/authOperations';
 
 const RoutesStack = () => {
-  return (
-    <NavigationContainer>
-      <MainStack.Navigator screenOptions={{ headerShown: false }}>
-        <MainStack.Screen name="SignUp" component={RegistrationScreen} />
-        <MainStack.Screen name="LogIn" component={LoginScreen} />
-        <MainStack.Screen name="Home" component={HomeScreen} />
-        <MainStack.Screen
-          name="CreatePostsScreen"
-          component={CreatePostsScreen}
-        />
-        <MainStack.Screen name="ProfileScreen" component={ProfileScreen} />
-        <MainStack.Screen name="CommentsScreen" component={CommentsScreen} />
-        <MainStack.Screen name="MapScreen" component={MapScreen} />
-      </MainStack.Navigator>
-    </NavigationContainer>
-  );
+    const dispatch = useDispatch();
+    const stateChange = useSelector(selectStateChanged);
+    const routing = useRoute(stateChange);
+
+    // useEffect(() => {
+    //   dispatch(checkUser());
+    // }, []);
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            console.log('user: ', user);
+            if (!user) return;
+
+            const credentials = {
+                user: { name: user.displayName, email: user.email },
+                uid: user.uid,
+            };
+
+            console.log(credentials);
+            dispatch(logIn(credentials));
+        });
+    }, [dispatch]);
+
+    return <NavigationContainer>{routing}</NavigationContainer>;
 };
 
 export default RoutesStack;

@@ -1,9 +1,13 @@
 import AuthBackground from '../../../components/AuthBackground/AuthBackground';
 import RegisterForm from '../../../module/RegisterForm/RegisterForm';
+import { useDispatch } from 'react-redux';
+import { register } from '../../../redux/auth/authOperations';
 
 const RegistrationScreen = ({ navigation }) => {
+    const dispatch = useDispatch();
+
     const onFormSubmit = (userCredentials) => {
-        navigation.navigate('Home');
+        dispatch(register(userCredentials));
     };
 
     return (
