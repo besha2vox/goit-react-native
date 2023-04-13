@@ -1,8 +1,8 @@
 import * as Location from 'expo-location';
+import RoutesStack from './src/RoutesStack';
 import { useFonts } from 'expo-font';
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
-import RoutesStack from './src/RoutesStack';
 import { useEffect } from 'react';
 
 export default function App() {

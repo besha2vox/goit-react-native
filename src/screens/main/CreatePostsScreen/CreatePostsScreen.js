@@ -35,10 +35,16 @@ const CreatePostsScreen = ({ route, navigation }) => {
     const [post, setPost] = useState(initialValues);
     const activeBtn = Boolean(post.image && post.name && post.location);
     const [camera, setCamera] = useState(null);
+    const [hasPermission, setHasPermission] = useState(null);
+
+    useEffect(() => {}, []);
 
     useEffect(() => {
         const getLocation = async () => {
             try {
+                const { status } = await Camera.requestCameraPermissionsAsync();
+                setHasPermission(status === 'granted');
+
                 const location = await Location.getCurrentPositionAsync({});
                 const coordinates = {
                     latitude: location.coords.latitude,
@@ -55,7 +61,7 @@ const CreatePostsScreen = ({ route, navigation }) => {
                     location: { coordinates, region, country },
                 }));
             } catch (error) {
-                console.log('error: ', error, message);
+                console.log('error: ', message);
             }
         };
 
@@ -95,12 +101,21 @@ const CreatePostsScreen = ({ route, navigation }) => {
                     <View>
                         {!post.image && (
                             <View style={cameraWrapper}>
-                                <Camera ref={setCamera} style={imageWrapper}>
-                                    <CameraActiveBtn
-                                        pressHandler={takePhoto}
-                                        isActive={post.image}
-                                    />
-                                </Camera>
+                                {hasPermission === null ? (
+                                    <View />
+                                ) : hasPermission === false ? (
+                                    <Text>No access to camera</Text>
+                                ) : (
+                                    <Camera
+                                        ref={setCamera}
+                                        style={imageWrapper}
+                                    >
+                                        <CameraActiveBtn
+                                            pressHandler={takePhoto}
+                                            isActive={post.image}
+                                        />
+                                    </Camera>
+                                )}
                             </View>
                         )}
                         {post.image && (

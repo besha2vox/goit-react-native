@@ -24,6 +24,7 @@ const fetchAllPosts = createAsyncThunk(
                 posts.push(post);
             });
 
+            console.log(posts);
             return posts;
         } catch (error) {
             console.log(error.message);
